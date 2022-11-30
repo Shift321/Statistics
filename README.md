@@ -1,7 +1,48 @@
 # Statistics
 
 Тестовое задание для компании CiPlay
+## Техническое задание
+Нужно разработать микросервис для счетчиков статистики. Сервис должен уметь взаимодействовать с клиентом при помощи REST API. Также нужно реализовать валидацию входных данных.
 
+API методы:
+Метод сохранения статистики
+Метод показа статистики
+Метод сброса статистики
+Метод сохранения статистики.
+Принимает на вход:
+
+date - дата события
+views - количество показов
+clicks - количество кликов
+cost - стоимость кликов (в рублях с точностью до копеек)
+Поля views, clicks и cost - опциональные. Статистика агрегируется по дате.
+
+Метод показа статистики
+Принимает на вход:
+
+from - дата начала периода (включительно)
+to - дата окончания периода (включительно)
+Отвечает статистикой, отсортированной по дате. В ответе должны быть поля:
+
+date - дата события
+views - количество показов
+clicks - количество кликов
+cost - стоимость кликов
+cpc = cost/clicks (средняя стоимость клика)
+cpm = cost/views * 1000 (средняя стоимость 1000 показов)
+Метод сброса статистики
+Удаляет всю сохраненную статистику.
+
+Критерии приемки:
+язык программирования: Python/ Fast Api
+можно использовать любое хранилище(PostgreSQL, MySQl, Redis и т.д.) или обойтись без него (in-memory). При использовании СУБД нужен файл с запросами на создание - - всех необходимых таблиц.
+формат даты YYYY-MM-DD.
+стоимость указывается в рублях с точностью до копеек.
+в методе показа статистики можно выбрать сортировку по любому из полей ответа.
+простая инструкция для запуска (в идеале — с возможностью запустить в docker).
+Усложнения:
+покрытие unit-тестами.
+документация (достаточно структурированного описания методов, примеров их вызова в README.md).
 ## Установка и запуск приложения
 
 
@@ -11,7 +52,7 @@
 docker-compose up
 ```
 
-## Основные круды
+## CRUD
 
 Сохранение статистики в базу данных
 ```python
@@ -47,6 +88,36 @@ async def delete(db) -> None:
     for statistic in statistics:
         db.delete(statistic)
     db.flush()
+```
+## Controllers
+Получение статистики за определенный промежуток времени
+```python
+async def get(starts: date, ends: date, filter_by: Optional[str] = None, db: Session = Depends(get_db)):
+
+    statistics = await StatisticsCRUD.show_in_time(starts=starts, ends=ends, filter_by=filter_by, db=db)
+    if len(statistics) == 0:
+        raise HTTPException(status_code=404,
+                            detail=ErrorMessagesUtil.no_statitstics_between_date(starts=starts, ends=ends))
+    return response(data=statistics)
+```
+Сохранение статистики
+```python
+async def save(stat_date: date, views: Optional[int] = None, clicks: Optional[int] = None,
+               cost: Optional[float] = None,
+               db: Session = Depends(get_db)):
+
+    statistics = await StatisticsCRUD.save(stat_date=stat_date, views=views,
+                                           clicks=clicks, cost=cost, db=db)
+    db.commit()
+    return response(data=statistics)
+```
+Удаление всей статистики
+```python
+async def delete(db: Session = Depends(get_db)):
+
+    statistics = await StatisticsCRUD.delete(db=db)
+    db.commit()
+    return response()
 ```
 ## База данных
 В качестве базы данных была использованна SQLite так как для данного задания ее достаточно

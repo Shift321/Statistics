@@ -23,7 +23,7 @@ class StatisticsCRUD:
         return parse_obj_as(StatisticsUploadResponse, statistics)
 
     @staticmethod
-    async def show_in_time(db, starts: date, ends: date, filter_by: str) -> list[StatisticsUploadResponse]:
+    async def show_in_time(db, starts: date, ends: date, filter_by: Optional[str]) -> list[StatisticsUploadResponse]:
         """
         Показ статистики
         """
