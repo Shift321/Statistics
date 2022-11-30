@@ -23,7 +23,8 @@ def test_get():
         "clicks": 0,
         "cost": 0
     })
-    response = client.get("/api/v1/get-statistics", params={'starts': "2022-10-20", 'ends': '2022-10-20'})
+
+    response = client.get("/api/v1/get-statistics", params={'start': "2022-10-20", 'end': '2022-10-20'})
     assert response.status_code == 200, response.text
     data = response.json()
     for statistic in data['data']:
