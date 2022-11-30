@@ -41,6 +41,5 @@ class StatisticsCRUD:
         Удаление статистики
         """
         statistics = db.query(Statistics).all()
-        for statistic in statistics:
-            db.delete(statistic)
+        db.delete(statistics)
         db.flush()
