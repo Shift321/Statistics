@@ -23,14 +23,14 @@ class StatisticsCRUD:
         return parse_obj_as(StatisticsUploadResponse, statistics)
 
     @staticmethod
-    async def show_in_time(db, starts: date, ends: date, filter_by: Optional[str]) -> list[StatisticsUploadResponse]:
+    async def show_in_time(db, start: date, end: date, filter_by: Optional[str]) -> list[StatisticsUploadResponse]:
         """
         Показ статистики
         """
         if not filter_by:
             filter_by = 'stat_date'
         statistics = db.query(Statistics). \
-            filter(Statistics.stat_date >= starts, Statistics.stat_date <= ends). \
+            filter(Statistics.stat_date >= start, Statistics.stat_date <= end). \
             order_by(filter_by).all()
 
         return parse_obj_as(list[StatisticsUploadResponse], statistics)

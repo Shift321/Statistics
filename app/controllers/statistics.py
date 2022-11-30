@@ -13,15 +13,15 @@ from app.utils import ErrorMessagesUtil
 class StatisticsController:
 
     @staticmethod
-    async def get(starts: date, ends: date, filter_by: Optional[str] = None, db: Session = Depends(get_db)):
+    async def get(start: date, end: date, filter_by: Optional[str] = None, db: Session = Depends(get_db)):
         """
         Получение статистики за определенный промежуток времени
         """
 
-        statistics = await StatisticsCRUD.show_in_time(starts=starts, ends=ends, filter_by=filter_by, db=db)
+        statistics = await StatisticsCRUD.show_in_time(start=start, end=end, filter_by=filter_by, db=db)
         if len(statistics) == 0:
             raise HTTPException(status_code=404,
-                                detail=ErrorMessagesUtil.no_statitstics_between_date(starts=starts, ends=ends))
+                                detail=ErrorMessagesUtil.no_statitstics_between_date(start=start, end=end))
         return response(data=statistics)
 
     @staticmethod

@@ -24,12 +24,16 @@ class StatisticsUploadResponse(BaseModel):
 
     @validator("cpc", always=True, pre=True)
     def cpc_count(cls, v, values):
-        if values['cost'] and values['clicks'] is not None:
-            v = values['cost'] / values['clicks']
+        cost = values['cost']
+        clicks = values['clicks']
+        if cost and clicks is not None:
+            v = cost / clicks
             return v
 
     @validator("cpm", always=True, pre=True)
     def cpm_count(cls, v, values):
-        if values['cost'] and values['views'] is not None:
-            v = values['cost'] / values['views'] * 1000
+        cost = values['cost']
+        views = values['views']
+        if cost and views is not None:
+            v = cost / views * 1000
             return v

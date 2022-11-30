@@ -1,8 +1,8 @@
-import json
+from typing import Dict
 from typing import Any
 
 
-def response(data: Any = None, status: str = 'ok') -> json:
+def response(data: Any = None, status: str = 'ok') -> Dict:
     """
     Темплейт респонса для контроллеров
     """
